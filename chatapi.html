@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTIFY.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --secondary: #2d3436;
+            --dark-bg: #12181b;
+            --dark-panel: #1e272e;
+            --dark-text: #f5f6fa;
+            --dark-text-secondary: #b2bec3;
+            --accent: #00cec9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: rgba(108, 92, 231, 0.2);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            background: var(--dark-panel);
+            padding: 18px 0;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            color: var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        ul {
+            display: flex;
+            list-style: none;
+        }
+
+        ul li a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: var(--dark-text-secondary);
+            font-weight: 500;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        ul li a:hover {
+            color: var(--primary);
+        }
+
+        ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        ul li a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            padding: 120px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
+            animation: rotateGradient 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            color: var(--dark-text);
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--dark-text), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGradient 5s ease infinite;
+            background-size: 200 200%;
+        }
+
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero p {
+            color: var(--dark-text-secondary);
+            font-size: 17px;
+            margin-bottom: 35px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 14px 38px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            box-shadow: 0px 4px 15px rgba(108, 92, 231, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 25px rgba(108, 92, 231, 0.6);
+        }
+
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.3) 45%,
+                rgba(255, 255, 255, 0) 60%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 60px 10px;
+        }
+
+        .feature-card {
+            background: var(--dark-panel);
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) !important;
+            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.3);
+            border-color: rgba(108, 92, 231, 0.3);
+        }
+
+        .feature-number {
+            font-size: 38px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+        }
+
+        .feature-description {
+            color: var(--dark-text-secondary);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .hero {
+                padding: 80px 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            ul {
+                display: none; 
+            }
+        }
+
+        .team-member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 160px;
+        }
+        .team-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 4px solid var(--primary);
+            box-shadow: 0 4px 18px rgba(108,92,231,0.18);
+            margin-bottom: 18px;
+            transition: transform 0.3s;
+        }
+        .team-photo:hover {
+            transform: scale(1.07) rotate(-2deg);
+            box-shadow: 0 8px 28px rgba(108,92,231,0.28);
+        }
+        .team-name {
+            font-size: 1.1rem;
+            color: var(--dark-text);
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 700px) {
+            .team-member { width: 48%; margin-bottom: 30px; }
+            .team-photo { width: 90px; height: 90px; }
+        }
+        @media (max-width: 500px) {
+            .team-member { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="particles" id="particles"></div>
+    
+    <nav>
+        <div class="container nav-content">
+            <div class="logo">
+                <i class="fas fa-landmark logo-icon"></i>
+                <span>ARTIFY.ai</span>
+            </div>
+            <ul>
+                <li>
+                    <a href="#features">Features</a>
+                    <a href="#about">About</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>AI Museum Guide</h1>
+            <p>Discover, explore, and learn about museums and their collections with ARTIFY.ai. Get instant information on exhibits, interactive maps, audio tours, and personalized recommendations for your next museum visit!</p>
+            <a href="chat.html" class="cta-button">Explore ARTIFY.ai</a>
+        </div>
+    </section>
+
+    <section id="features" class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-number"><i class="fas fa-palette"></i></div>
+                <h3 class="feature-title">Exhibit Information</h3>
+                <p class="feature-description">Instantly access details about artworks, artifacts, and exhibits in any museum.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number"><i class="fas fa-map-marked-alt"></i></div>
+                <h3 class="feature-title">Interactive Maps</h3>
+                <p class="feature-description">Navigate museums easily with interactive maps and find your favorite collections.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number"><i class="fas fa-user-astronaut"></i></div>
+                <h3 class="feature-title">Personalized Recommendations</h3>
+                <p class="feature-description">Get suggestions for exhibits and museums based on your interests.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-number"><i class="fas fa-calendar-alt"></i></div>
+                <h3 class="feature-title">Event Alerts</h3>
+                <p class="feature-description">Stay updated on upcoming exhibitions, workshops, and special events.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="container">
+        <h2 style="text-align:center; margin-bottom: 40px; color: var(--primary); font-size: 2.2rem;">Meet the Team</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;">
+            <div class="team-member">
+                <div class="team-photo" style="background-image: url('https://res.cloudinary.com/dqlku2tfk/image/upload/v1744911738/1739126949781_mbeu5q.jpg');"></div>
+                <div class="team-name">Bishal Baira</div>
+            </div>
+            <div class="team-member">
+                <div class="team-photo" style="background-image: url('https://res.cloudinary.com/dqlku2tfk/image/upload/v1745255342/1745251502491_yyykcl.jpg');"></div>
+                <div class="team-name">Siddharth Jha</div>
+            </div>
+            <div class="team-member">
+                <div class="team-photo" style="background-image: url('https://res.cloudinary.com/dqlku2tfk/image/upload/v1744911843/1694010275803_i70uwh.jpg');"></div>
+                <div class="team-name">Rudra</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 10 + 5;
+                const posX = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 10;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetSection = document.querySelector(this.getAttribute('href'));
+                if (targetSection) {
+                    targetSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const hero = document.querySelector('.hero');
+            hero.style.opacity = '0';
+            hero.style.transform = 'translateY(20px)';
+            hero.style.transition = 'all 0.8s ease-out';
+            
+            setTimeout(() => {
+                hero.style.opacity = '1';
+                hero.style.transform = 'translateY(0)';
+            }, 300);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARTIFY.ai</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #6c5ce7;
+        --primary-dark: #5649c0;
+        --secondary: #2d3436;
+        --dark-bg: #12181b;
+        --dark-panel: #1e272e;
+        --dark-text: #f5f6fa;
+        --dark-text-secondary: #b2bec3;
+        --accent: #00cec9;
+        --error: #ff7675;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      body {
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        background-color: rgba(108, 92, 231, 0.2);
+        border-radius: 50%;
+        animation: float 15s infinite linear;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-1000px) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+
+        margin: 0 auto;
+        background-color: var(--dark-panel);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        padding: 1.2rem 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--secondary),
+          var(--dark-panel)
+        );
+        color: var(--dark-text);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 2;
+      }
+
+      .chat-header::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        animation: headerGlow 3s infinite alternate;
+      }
+
+      @keyframes headerGlow {
+        0% {
+          opacity: 0.3;
+        }
+        100% {
+          opacity: 0.8;
+        }
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+
+      .logo-icon {
+        color: var(--primary);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .model-selector {
+        position: relative;
+      }
+
+      .model-selector::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(
+          45deg,
+          var(--primary),
+          var(--accent),
+          var(--primary)
+        );
+        z-index: -1;
+        border-radius: 8px;
+        animation: borderRotate 4s linear infinite;
+        opacity: 0.7;
+      }
+
+      /* @keyframes borderRotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      } */
+
+      .model-selector select {
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        border: none;
+        background-color: var(--dark-panel);
+        color: var(--dark-text);
+        font-weight: 500;
+        cursor: pointer;
+        appearance: none;
+        position: relative;
+        z-index: 1;
+      }
+
+      .chat-history {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background: linear-gradient(
+          to bottom,
+          var(--dark-panel),
+          var(--secondary)
+        );
+        scroll-behavior: smooth;
+      }
+
+      .chat-history::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .chat-history::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-history::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+      }
+
+      .chat-history::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
+      }
+
+      .message {
+        max-width: 80%;
+        padding: 1.2rem;
+        border-radius: 15px;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        position: relative;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: messageAppear 0.4s forwards;
+      }
+
+      @keyframes messageAppear {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .user-message {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+        flex-direction: row-reverse;
+        box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        margin-left: 20%;
+        animation-delay: 0.1s;
+      }
+
+      .ai-message {
+        background-color: rgba(30, 39, 46, 0.8);
+        color: var(--dark-text);
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        margin-right: 20%;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .bot-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        animation: floatAvatar 3s ease-in-out infinite;
+        box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+      }
+
+      @keyframes floatAvatar {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .bot-avatar img {
+        width: 24px;
+        height: 24px;
+        filter: brightness(0) invert(1);
+      }
+
+      .message-content {
+        flex: 1;
+        white-space: pre-wrap;
+        line-height: 1.6;
+      }
+
+      .input-container {
+        padding: 1.5rem 2rem;
+        background-color: var(--secondary);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        gap: 1rem;
+        position: relative;
+      }
+
+      .input-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), transparent);
+        animation: inputGlow 3s infinite;
+      }
+
+      @keyframes inputGlow {
+        0% {
+          opacity: 0;
+          left: -100%;
+        }
+        20% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 0;
+          left: 100%;
+        }
+      }
+
+      #messageInput {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        resize: none;
+        min-height: 50px;
+        max-height: 150px;
+        background-color: rgba(0, 0, 0, 0.2);
+        color: var(--dark-text);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s;
+      }
+
+      #messageInput:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.3);
+      }
+
+      #messageInput::placeholder {
+        color: var(--dark-text-secondary);
+      }
+
+      #sendBtn {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        border: none;
+        padding: 0 1.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+      }
+
+      #sendBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+      }
+
+      #sendBtn:active {
+        transform: translateY(1px);
+      }
+
+      #sendBtn::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          to bottom right,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0) 30%,
+          rgba(255, 255, 255, 0.3) 45%,
+          rgba(255, 255, 255, 0) 60%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(30deg);
+        animation: shine 3s infinite;
+      }
+
+      @keyframes shine {
+        0% {
+          transform: translateX(-100%) rotate(30deg);
+        }
+        100% {
+          transform: translateX(100%) rotate(30deg);
+        }
+      }
+
+      .typing-animation {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 12px 16px;
+        background-color: rgba(30, 39, 46, 0.8);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out;
+      }
+
+      .typing-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.6;
+        }
+        30% {
+          transform: translateY(-5px);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .chat-header {
+          padding: 1rem;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .message {
+          max-width: 90%;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+
+        .input-container {
+          padding: 1rem;
+        }
+
+        #sendBtn {
+          padding: 0 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="particles" id="particles"></div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-header">
+        <div class="logo">
+          <i class="fas fa-robot logo-icon"></i>
+          <span>ARTIFY.ai</span>
+        </div>
+        <div class="model-selector">
+          <select id="modelSelect">
+            <option value="mistralai/mistral-7b-instruct">Mistral 7B</option>
+            <option value="meta-llama/llama-2-13b-chat">LLaMA 2 13B</option>
+            <option value="gryphe/mythomax-l2-13b">MythoMax 13B</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chat-history" id="chatHistory">
+        <div
+          class="message ai-message"
+          style="opacity: 1; transform: translateY(0)"
+        >
+          <div class="bot-avatar">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
+              alt="AI Assistant"
+            />
+          </div>
+          <div class="message-content">
+            Hello! I'm your AI museum guide. Ask me anything about museums, exhibits, collections, or plan your next visit!
+          </div>
+        </div>
+      </div>
+
+      <div class="input-container">
+        <textarea
+          id="messageInput"
+          placeholder="Ask about a museum, exhibit, or collection..."
+        ></textarea>
+        <button id="sendBtn" onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i>
+          <span>Send</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function createParticles() {
+        const particlesContainer = document.getElementById("particles");
+        const particleCount = 20;
+
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement("div");
+          particle.classList.add("particle");
+
+          // Random properties
+          const size = Math.random() * 10 + 5;
+          const posX = Math.random() * 100;
+          const delay = Math.random() * 15;
+          const duration = Math.random() * 10 + 10;
+
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${posX}%`;
+          particle.style.animationDelay = `${delay}s`;
+          particle.style.animationDuration = `${duration}s`;
+          particle.style.opacity = Math.random() * 0.5 + 0.1;
+
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      createParticles();
+
+      const OPENROUTER_API_KEY =
+        "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";
+      const OPENROUTER_API_URL =
+        "https://openrouter.ai/api/v1/chat/completions";
+      async function sendMessage() {
+        const inputField = document.getElementById("messageInput");
+        const message = inputField.value.trim();
+        if (!message) return;
+
+        addMessage(message, "user");
+        inputField.value = "";
+
+        const loadingMsg = addLoadingMessage();
+
+        try {
+          const response = await getAIResponse(message);
+          replaceLoadingMessage(loadingMsg, response, "ai");
+        } catch (error) {
+          replaceLoadingMessage(loadingMsg, `Error: ${error.message}`, "ai");
+        }
+      }
+
+      function addMessage(content, sender) {
+        const history = document.getElementById("chatHistory");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}-message`;
+
+        const delay = Math.random() * 0.2;
+        messageDiv.style.animationDelay = `${delay}s`;
+
+        if (sender === "ai") {
+          messageDiv.innerHTML = `
+ <div class="bot-avatar">
+ <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI Assistant">
+ </div>
+ <div class="message-content">${content}</div>
+ `;
+        } else {
+          messageDiv.innerHTML = `
+ <div class="message-content">${content}</div>
+ `;
+        }
+
+        history.appendChild(messageDiv);
+        history.scrollTo({
+          top: history.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+
+      function addLoadingMessage() {
+        const history = document.getElementById("chatHistory");
+        const loader = document.createElement("div");
+        loader.className = "message ai-message";
+        loader.style.opacity = "1";
+        loader.style.transform = "translateY(0)";
+        loader.innerHTML = `
+ <div class="bot-avatar">
+ <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI Assistant">
+ </div>
+ <div class="typing-animation">
+ <div class="typing-dot"></div>
+ <div class="typing-dot"></div>
+ <div class="typing-dot"></div>
+ <span style="color: var(--dark-text-secondary); margin-left: 8px;">Thinking...</span>
+ </div>
+ `;
+        history.appendChild(loader);
+        history.scrollTo({
+          top: history.scrollHeight,
+          behavior: "smooth",
+        });
+        return loader;
+      }
+
+      function replaceLoadingMessage(loaderElement, content, sender) {
+        const formattedContent = formatResponse(content);
+        loaderElement.className = `message ${sender}-message`;
+        loaderElement.innerHTML = `
+ <div class="bot-avatar">
+ <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI Assistant">
+ </div>
+ <div class="message-content">${formattedContent}</div>
+ `;
+      }
+
+      function formatResponse(responseText) {
+        return responseText
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>")
+          .replace(/`(.*?)`/g, "<code>$1</code>")
+          .replace(/\n/g, "<br>")
+          .replace(/^### (.*$)/gm, "<h3>$1</h3>")
+          .replace(/^## (.*$)/gm, "<h2>$1</h2>")
+          .replace(/^# (.*$)/gm, "<h1>$1</h1>");
+      }
+
+      async function getAIResponse(prompt) {
+        const model = document.getElementById("modelSelect").value;
+        const response = await fetch(OPENROUTER_API_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": window.location.href,
+            "X-Title": "ARTIFY.ai Museum Guide",
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are ARTIFY.ai, an expert AI museum guide. Provide clear, engaging, and accurate information about museums, exhibits, collections, and art history. Format responses with markdown: Use **bold**, *italic*, `code`, ```code blocks```, # Headers, and lists. Suggest related exhibits or museums when relevant. Be concise, friendly, and helpful for museum visitors.",
+              },
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            temperature: 0.7,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to get response");
+        const data = await response.json();
+        return data.choices[0].message.content;
+      }
+
+      document
+        .getElementById("messageInput")
+        .addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+
+      document
+        .getElementById("messageInput")
+        .addEventListener("input", function () {
+          this.style.height = "auto";
+          this.style.height = this.scrollHeight + "px";
+        });
+    </script>
+  </body>
+</html>
